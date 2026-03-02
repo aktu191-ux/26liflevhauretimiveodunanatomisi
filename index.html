@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liflevha Üretimi ve Odun Anatomisi</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8B6914;
+            --secondary: #D4A574;
+            --accent: #4A7C59;
+            --gray: #6B7280;
+            --light-gray: #F5F5F0;
+            --cream: #FAF8F5;
+            --text: #2D2D2D;
+            --text-light: #6B7280;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cream);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* Shortcut/Logo */
+        .shortcut {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .shortcut:hover {
+            transform: translateY(-2px);
+        }
+
+        .shortcut-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .shortcut-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 100px 5% 60px;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--light-gray) 100%);
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-bottom: 50px;
+            font-weight: 400;
+        }
+
+        .hero-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .hero-image-container {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .hero-image-container img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .hero-image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .hero-image-caption {
+            background: white;
+            padding: 15px 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            text-align: center;
+        }
+
+        /* Definition Section */
+        .definition-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.05);
+        }
+
+        .definition-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .definition-text {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+
+        .keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .keyword {
+            background: var(--light-gray);
+            color: var(--text);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #E5E5E0;
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 80px 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            margin-bottom: 50px;
+        }
+
+        .section-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 700px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.05);
+        }
+
+        .chart-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .chart-area {
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px;
+            background: var(--cream);
+            border-radius: 12px;
+            border-left: 4px solid;
+        }
+
+        .legend-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .legend-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .legend-content p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Tabs Section */
+        .tabs-section {
+            background: var(--light-gray);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #E5E5E0;
+            padding-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button:hover {
+            background: white;
+            color: var(--text);
+        }
+
+        .tab-button.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -22px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .tab-keywords h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .keyword-list {
+            list-style: none;
+        }
+
+        .keyword-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .keyword-list li::before {
+            content: '•';
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .tab-image {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .tab-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .tab-description {
+            margin-top: 20px;
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Energy Chart Section */
+        .energy-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.05);
+        }
+
+        .energy-chart-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+
+        .energy-chart-area {
+            position: relative;
+            height: 450px;
+        }
+
+        .chart-interpretation {
+            background: var(--cream);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .chart-interpretation h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .interpretation-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #E5E5E0;
+        }
+
+        .interpretation-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .interpretation-item h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .interpretation-item p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 40px 5%;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-images {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper,
+            .tab-panel,
+            .energy-chart-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .shortcut {
+                padding: 8px 12px;
+            }
+
+            .shortcut-text {
+                display: none;
+            }
+
+            .hero {
+                padding: 80px 4% 40px;
+            }
+
+            .section {
+                padding: 50px 4%;
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .tabs-header {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .tab-button {
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Shortcut -->
+    <div class="shortcut" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="shortcut-icon">LF</div>
+        <span class="shortcut-text">Liflevha</span>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Liflevha Üretimi ve Odun Anatomisi</h1>
+            <p class="hero-subtitle">Odun yapısının liflevha üretim sürecine etkilerinin bilimsel analizi</p>
+            
+            <div class="hero-images">
+                <div class="hero-image-container">
+                    <img src="images/wood-anatomy.jpg" alt="Odun Anatomisi">
+                    <div class="hero-image-caption">Odun anatomisi ve hücre yapısı</div>
+                </div>
+                <div class="hero-image-container">
+                    <img src="images/hero-production.jpg" alt="Liflevha Üretim Süreci">
+                    <div class="hero-image-caption">Modern liflevha üretim tesisi</div>
+                </div>
+            </div>
+
+            <div class="definition-section">
+                <h2 class="definition-title">
+                    <span>📋</span> Liflevha Nedir?
+                </h2>
+                <p class="definition-text">
+                    Liflevha (Fiberboard), odun liflerinin mekanik ve/veya termomekanik işlemlerle ayrıştırılıp, 
+                    kurutulduktan sonra reçine gibi bağlayıcılarla preslenmesiyle elde edilen bir yapı malzemesidir. 
+                    Odun anatomisindeki traheidler, lifler ve diğer hücre elemanlarının fiziksel özellikleri, 
+                    son ürünün mekanik dayanımı, yüzey kalitesi ve işlenebilirliği üzerinde doğrudan etkilidir.
+                </p>
+                <div class="keywords">
+                    <span class="keyword">Odun Anatomisi</span>
+                    <span class="keyword">Traheid</span>
+                    <span class="keyword">Lif Yapısı</span>
+                    <span class="keyword">Hücre Duvarı</span>
+                    <span class="keyword">Lignin</span>
+                    <span class="keyword">Selüloz</span>
+                    <span class="keyword">Hemiseliloz</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 1: Hammadde Dağılımı -->
+    <section class="section">
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <h2 class="section-title">Hammadde Dağılımı</h2>
+            <p class="section-description">
+                Liflevha üretiminde kullanılan hammaddelerin kaynaklarına göre dağılımı ve özellikleri
+            </p>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-wrapper">
+                <div class="chart-area">
+                    <canvas id="hammaddeChart"></canvas>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item" style="border-color: #D4A574;">
+                        <div class="legend-icon" style="background: #FFF3E0; color: #D4A574;">🌲</div>
+                        <div class="legend-content">
+                            <h4>Yumuşak Ağaçlar (%45)</h4>
+                            <p>Çam, göknar gibi iğne yapraklı türler. Uzun traheidleri sayesinde yüksek mukavemet sağlar.</p>
+                        </div>
+                    </div>
+                    <div class="legend-item" style="border-color: #4A7C59;">
+                        <div class="legend-icon" style="background: #E8F5E9; color: #4A7C59;">🌳</div>
+                        <div class="legend-content">
+                            <h4>Sert Ağaçlar (%30)</h4>
+                            <p>Meşe, kayın gibi geniş yapraklı türler. Kısa lifleri kompakt yapı oluşturur.</p>
+                        </div>
+                    </div>
+                    <div class="legend-item" style="border-color: #6B8E9F;">
+                        <div class="legend-icon" style="background: #E3F2FD; color: #6B8E9F;">♻️</div>
+                        <div class="legend-content">
+                            <h4>Geri Dönüşüm Atıkları (%15)</h4>
+                            <p>Kereste atıkları, budaklar ve geri dönüştürülmüş kağıt ürünleri.</p>
+                        </div>
+                    </div>
+                    <div class="legend-item" style="border-color: #8B7B6B;">
+                        <div class="legend-icon" style="background: #EFEBE9; color: #8B7B6B;">🪵</div>
+                        <div class="legend-content">
+                            <h4>Talas ve Talaş (%10)</h4>
+                            <p>Odun işleme sanayinin yan ürünleri, düşük maliyetli hammadde kaynağı.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Üretim Süreci -->
+    <section class="section">
+        <div class="section-header">
+            <div class="section-number">2</div>
+            <h2 class="section-title">Üretim Süreci ve Odun Anatomisi İlişkisi</h2>
+            <p class="section-description">
+                Her üretim aşamasında odun yapısının rolü ve anatomik özelliklerin etkisi
+            </p>
+        </div>
+
+        <div class="tabs-section">
+            <div class="tabs-header">
+                <button class="tab-button active" onclick="openTab(event, 'tab1')">Hammadde Seçimi ve Ağaç Anatomisi</button>
+                <button class="tab-button" onclick="openTab(event, 'tab2')">Kabuk Alma</button>
+                <button class="tab-button" onclick="openTab(event, 'tab3')">Lifleme (Defibrasyon)</button>
+                <button class="tab-button" onclick="openTab(event, 'tab4')">Lifleri Kurutma</button>
+                <button class="tab-button" onclick="openTab(event, 'tab5')">Tutkallama</button>
+                <button class="tab-button" onclick="openTab(event, 'tab6')">Şekillendirme ve Pressleme</button>
+                <button class="tab-button" onclick="openTab(event, 'tab7')">Zımparalama ve Son İşlemler</button>
+            </div>
+
+            <!-- Tab 1 -->
+            <div id="tab1" class="tab-content active">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Trakeid boyutu ve çapı</li>
+                            <li>Hücre duvarı kalınlığı</li>
+                            <li>ilkbahar odunu hücreleri</li>
+                            <li>yaz odunu hücreleri</li>
+                            <li>Lif uzunluğu</li>
+                            <li>Odun yoğunluğu</li>
+                        </ul>
+                        <p class="tab-description">
+                            Ağaç türü seçimi, liflevha kalitesini doğrudan etkiler. İlkbahar odunundaki geniş çaplı, 
+                            ince duvarlı traheidler lifleme işleminde daha kolay ayrışırken, yaz odunundaki 
+                            kalın duvarlı hücreler son ürüne mukavemet katar.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/wood-anatomy.jpg" alt="Ağaç Anatomisi">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2 -->
+            <div id="tab2" class="tab-content">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Kabuk dokusu</li>
+                            <li>Floem katmanı</li>
+                            <li>Kambiyum bölgesi</li>
+                            <li>Dışbükeylik</li>
+                            <li>Yüzey temizliği</li>
+                        </ul>
+                        <p class="tab-description">
+                            Kabuk alma işlemi, odun liflerinin kalitesini korumak için kritiktir. Kabuktaki 
+                            kireç taşı ve silika mineralleri, lifleme ekipmanına zarar verebilir ve son üründe 
+                            istenmeyen koyu renk lekeler oluşturabilir.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/debarking.jpg" alt="Kabuk Alma">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3 -->
+            <div id="tab3" class="tab-content">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Mekanik lifleme</li>
+                            <li>Termomekanik lifleme</li>
+                            <li>Trakeid ayrışması</li>
+                            <li>Orta lamella</li>
+                            <li>Lignin plastikleşmesi</li>
+                            <li>Lif boyutu dağılımı</li>
+                        </ul>
+                        <p class="tab-description">
+                            Lifleme işlemi, odun traheidlerinin birbirinden ayrılmasını sağlar. Isı ve mekanik 
+                            kuvvet uygulanarak orta lümendeki lignin yumuşatılır ve lifler birbirinden 
+                            ayrıştırılır. Bu süreçte traheid yapısı bozulmadan korunmalıdır.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/tracheid-comparison.jpg" alt="Lifleme Öncesi ve Sonrası Trakeidler">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4 -->
+            <div id="tab4" class="tab-content">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Nem içeriği</li>
+                            <li>Hücre duvarı geçirgenliği</li>
+                            <li>Pit yapıları</li>
+                            <li>Buharlaşma hızı</li>
+                            <li>İzotropik kuruma</li>
+                        </ul>
+                        <p class="tab-description">
+                            Kurutma işleminde, odun liflerinin hücre duvarındaki pit yapıları nemin dışarı 
+                            çıkışını etkiler. İdeal nem oranı %8-12 arasındadır. Aşırı kuruma liflerin 
+                            kırılganlaşmasına, yetersiz kuruma ise tutkal tutunumunu olumsuz etkiler.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/drying.jpg" alt="Lif Kurutma">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 5 -->
+            <div id="tab5" class="tab-content">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Üre-formaldehit tutkalı</li>
+                            <li>MDI reçine</li>
+                            <li>Lif yüzey alanı</li>
+                            <li>Adsorpsiyon</li>
+                            <li>Kürlenme reaksiyonu</li>
+                        </ul>
+                        <p class="tab-description">
+                            Tutkallama aşamasında, liflerin yüzey alanı ve hücre duvarı kompozisyonu reçine 
+                            tutunumunu etkiler. Yüksek oranda selüloz içeren lifler daha iyi tutkal bağlantısı 
+                            sağlar. Lignin oranı yüksek liflerde reçine tutunumu zayıflayabilir.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/gluing.jpg" alt="Tutkallama">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 6 -->
+            <div id="tab6" class="tab-content">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Sıcak presleme</li>
+                            <li>Lif oryantasyonu</li>
+                            <li>Yoğunluk gradyanı</li>
+                            <li>Hidrotermoliz</li>
+                            <li>Reçine polimerizasyonu</li>
+                        </ul>
+                        <p class="tab-description">
+                            Presleme işleminde sıcaklık ve basınç altında lifler birbirine kaynar ve reçine 
+                            kürlenir. Lif oryantasyonu, panelin mekanik özelliklerini belirler. Rastgele 
+                            oryantasyon izotropik özellikler sağlarken, düzenli oryantasyon anizotropik 
+                            davranış gösterir.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/pressing.jpg" alt="Pressleme">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 7 -->
+            <div id="tab7" class="tab-content">
+                <div class="tab-panel">
+                    <div class="tab-keywords">
+                        <h3>🔑 Anahtar Kelimeler</h3>
+                        <ul class="keyword-list">
+                            <li>Yüzey pürüzlülüğü</li>
+                            <li>Lif çıkıntıları</li>
+                            <li>Yoğunluk profili</li>
+                            <li>Zımpara tane boyutu</li>
+                            <li>Kaplama tutunumu</li>
+                        </ul>
+                        <p class="tab-description">
+                            Zımparalama işlemi, panel yüzeyindeki lif çıkıntılarını düzelterek pürüzsüz bir 
+                            yüzey oluşturur. Yüzey yoğunluğu ve lif yapısı, sonradan uygulanacak kaplamaların 
+                            (laminat, boya vb.) tutunumunu ve dayanımını etkiler.
+                        </p>
+                    </div>
+                    <div class="tab-image">
+                        <img src="images/sanding.jpg" alt="Zımparalama">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Enerji Tüketimi -->
+    <section class="section">
+        <div class="section-header">
+            <div class="section-number">3</div>
+            <h2 class="section-title">Üretim Sürecinde Enerji Tüketimi</h2>
+            <p class="section-description">
+                Liflevha üretiminin her aşamasında harcanan enerji miktarı ve verimlilik analizi
+            </p>
+        </div>
+
+        <div class="energy-section">
+            <div class="energy-chart-wrapper">
+                <div class="energy-chart-area">
+                    <canvas id="energyChart"></canvas>
+                </div>
+                <div class="chart-interpretation">
+                    <h3>📊 Grafik Yorumu</h3>
+                    <div class="interpretation-item">
+                        <h4>Lifleme (%35)</h4>
+                        <p>En yüksek enerji tüketiminin olduğu aşama. Mekanik ve termomekanik işlemler 
+                        yoğun enerji gerektirir.</p>
+                    </div>
+                    <div class="interpretation-item">
+                        <h4>Kurutma (%28)</h4>
+                        <p>Buhar üretimi ve hava sirkülasyonu için yüksek ısı enerjisi gereksinimi.</p>
+                    </div>
+                    <div class="interpretation-item">
+                        <h4>Pressleme (%20)</h4>
+                        <p>Hidrolik pres sistemleri ve ısıtma platenleri için enerji.</p>
+                    </div>
+                    <div class="interpretation-item">
+                        <h4>Diğer İşlemler (%17)</h4>
+                        <p>Kabuk alma, zımparalama, taşıma ve yardımcı sistemler.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">© 2026 Liflevha Üretimi ve Odun Anatomisi Sunumu</p>
+    </footer>
+
+    <script>
+        // Tab functionality
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Hammadde Chart (Donut)
+        const hammaddeCtx = document.getElementById('hammaddeChart').getContext('2d');
+        new Chart(hammaddeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Yumuşak Ağaçlar', 'Sert Ağaçlar', 'Geri Dönüşüm Atıkları', 'Talas ve Talaş'],
+                datasets: [{
+                    data: [45, 30, 15, 10],
+                    backgroundColor: [
+                        '#D4A574',
+                        '#4A7C59',
+                        '#6B8E9F',
+                        '#8B7B6B'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': %' + context.parsed;
+                            }
+                        },
+                        backgroundColor: 'rgba(45, 45, 45, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13 }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+
+        // Energy Chart (Bar)
+        const energyCtx = document.getElementById('energyChart').getContext('2d');
+        new Chart(energyCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Lifleme', 'Kurutma', 'Pressleme', 'Tutkallama', 'Kabuk Alma', 'Zımparalama', 'Taşıma'],
+                datasets: [{
+                    label: 'Enerji Tüketimi (%)',
+                    data: [35, 28, 20, 8, 4, 3, 2],
+                    backgroundColor: [
+                        '#8B6914',
+                        '#A67C52',
+                        '#D4A574',
+                        '#6B8E9F',
+                        '#4A7C59',
+                        '#8B7B6B',
+                        '#9E9E9E'
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Enerji: %' + context.parsed.y;
+                            }
+                        },
+                        backgroundColor: 'rgba(45, 45, 45, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 40,
+                        ticks: {
+                            callback: function(value) {
+                                return '%' + value;
+                            },
+                            font: { size: 12 },
+                            color: '#6B7280'
+                        },
+                        grid: {
+                            color: '#F0F0F0',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: { size: 12 },
+                            color: '#6B7280'
+                        },
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    </script>
+</body>
+</html>
